@@ -1,0 +1,40 @@
+name: Angular
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - run: npm install
+    - run: npm run build
+    - name: Upload results
+      uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: dist/test-task-frontend
+        retention-days: 1
+  deploy-to-host:
+    needs: build
+    uses: "defectly/DeployApplicationToHostAction/.github/workflows/DeployApplicationToHost.yml@master"
+    with:
+      host: ${{ vars.PROD_SSH_HOST }}
+      port: '2223'
+      user: 'root'
+      app-dir: ${{ vars.PROD_APP_DIR }}
+      tmp-dir: '/tmp/deploy-frontend'
+      pre-copy: 'echo meow'
+      post-copy: 'sudo chown -R www-data:www-data ${{vars.PROD_APP_DIR}}'
+    secrets:
+      private-key: ${{ secrets.PROD_SSH_KEY }}
