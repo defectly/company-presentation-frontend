@@ -1,0 +1,178 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Сотрудники</h1>
+  <button class="btn btn-primary" (click)="openCreateModal()" [disabled]="isLoading">
+    <i class="bi bi-plus"></i> Добавить сотрудника
+  </button>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped table-hover" [formGroup]="filterForm">
+    <thead class="table-dark">
+      <tr>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.Department)">
+          Отдел
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.Department)"></i>
+        </th>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.FirstName)">
+          Имя
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.FirstName)"></i>
+        </th>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.MiddleName)">
+          Отчество
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.MiddleName)"></i>
+        </th>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.LastName)">
+          Фамилия
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.LastName)"></i>
+        </th>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.BirthDate)">
+          Дата рождения
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.BirthDate)"></i>
+        </th>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.HireDate)">
+          Дата устройства
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.HireDate)"></i>
+        </th>
+        <th scope="col" class="sortable" (click)="sort(EmployeeSort.Salary)">
+          Зарплата
+          <i class="bi" [ngClass]="getSortIcon(EmployeeSort.Salary)"></i>
+        </th>
+        <th scope="col" class="text-center">Действия</th>
+      </tr>
+      <tr>
+        <th>
+          <app-autocomplete-dropdown
+            [options]="departmentOptions"
+            placeholder="Фильтр по отделу"
+            formControlName="departmentId">
+          </app-autocomplete-dropdown>
+        </th>
+        <th>
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="Имя"
+                 formControlName="firstName">
+        </th>
+        <th>
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="Отчество"
+                 formControlName="middleName">
+        </th>
+        <th>
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="Фамилия"
+                 formControlName="lastName">
+        </th>
+        <th>
+          <input type="date" class="form-control form-control-sm"
+                 formControlName="birthDate">
+        </th>
+        <th>
+          <input type="date" class="form-control form-control-sm"
+                 formControlName="hireDate">
+        </th>
+        <th>
+          <input type="text" class="form-control form-control-sm" 
+                 placeholder="Мин. зарплата"
+                 formControlName="salary">
+        </th>
+        <th class="text-center">
+          <button class="btn btn-sm btn-outline-secondary" 
+                  (click)="clearFilters()" 
+                  [disabled]="isLoading">
+            Очистить
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="isLoading">
+        <td colspan="8" class="text-center py-4">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </td>
+      </tr>
+      <tr *ngFor="let employee of employees" [class.opacity-50]="isLoading">
+        <td>{{ employee.department.name }}</td>
+        <td>{{ employee.firstName }}</td>
+        <td>{{ employee.middleName || '' }}</td>
+        <td>{{ employee.lastName }}</td>
+        <td>{{ formatDate(employee.birthDate) }}</td>
+        <td>{{ formatDate(employee.hireDate) }}</td>
+        <td>{{ formatCurrency(employee.salary) }}</td>
+        <td class="text-center">
+          <div class="btn-group btn-group-sm" role="group">
+            <button class="btn btn-outline-primary" 
+                    (click)="openEditModal(employee)"
+                    [disabled]="isLoading"
+                    title="Редактировать">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-outline-danger" 
+                    (click)="openDeleteModal(employee)"
+                    [disabled]="isLoading"
+                    title="Удалить">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="!isLoading && employees.length === 0">
+        <td colspan="8" class="text-center text-muted py-4">
+          Нет данных для отображения
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Pagination" *ngIf="totalPages > 1">
+  <ul class="pagination justify-content-center">
+    <li class="page-item" [class.disabled]="currentPage === 1 || isLoading">
+      <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1 || isLoading">
+        Предыдущая
+      </button>
+    </li>
+    <li class="page-item" 
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1">
+      <button class="page-link" 
+              (click)="goToPage(i + 1)" 
+              [disabled]="isLoading">
+        {{ i + 1 }}
+      </button>
+    </li>
+    <li class="page-item" [class.disabled]="currentPage === totalPages || isLoading">
+      <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages || isLoading">
+        Следующая
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<!-- Page info -->
+<div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalItems > 0">
+  <small class="text-muted">
+    Показаны {{ (currentPage - 1) * perPage + 1 }} - {{ currentPage * perPage > totalItems ? totalItems : currentPage * perPage }} из {{ totalItems }} записей
+  </small>
+  <small class="text-muted">
+    Страница {{ currentPage }} из {{ totalPages }}
+  </small>
+</div>
+
+<app-employee-form-modal
+  [isVisible]="isFormModalVisible"
+  [employee]="selectedEmployee"
+  [isLoading]="isLoading"
+  (save)="saveEmployee($event)"
+  (cancel)="closeFormModal()">
+</app-employee-form-modal>
+
+<app-delete-confirmation-modal
+  [isVisible]="isDeleteModalVisible"
+  [employeeName]="selectedEmployee ? getFullName(selectedEmployee) : ''"
+  [isLoading]="isLoading"
+  (confirm)="deleteEmployee()"
+  (cancel)="closeDeleteModal()">
+</app-delete-confirmation-modal> 

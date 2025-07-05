@@ -1,0 +1,109 @@
+<div class="modal fade" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'" 
+     tabindex="-1" role="dialog" [attr.aria-hidden]="!isVisible">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEdit ? 'Редактировать сотрудника' : 'Создать сотрудника' }}</h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="departmentId" class="form-label">Отдел</label>
+
+            <app-autocomplete-dropdown
+            [options]="departmentOptions"
+            [filterFunction]="customFilterFunction"
+            placeholder="Введите название отдела или выберите из списка"
+            formControlName="departmentId"
+            (selectionChange)="onDepartmentSelectionChange($event)">
+          </app-autocomplete-dropdown>
+            
+            <div class="alert alert-info mt-2 py-2 px-3" *ngIf="isCreatingNewDepartment">
+              <small class="mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                Будет создан новый отдел: <strong>{{ newDepartmentName }}</strong>
+              </small>
+            </div>
+            
+            <div class="invalid-feedback" 
+                 *ngIf="employeeForm.get('departmentId')?.invalid && employeeForm.get('departmentId')?.touched">
+              Отдел обязателен для заполнения
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="firstName" class="form-label">Имя</label>
+              <input type="text" class="form-control" id="firstName" 
+                     formControlName="firstName"
+                     [class.is-invalid]="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
+              <div class="invalid-feedback" 
+                   *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched">
+                Имя обязательно для заполнения
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="lastName" class="form-label">Фамилия</label>
+              <input type="text" class="form-control" id="lastName" 
+                     formControlName="lastName"
+                     [class.is-invalid]="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
+              <div class="invalid-feedback" 
+                   *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched">
+                Фамилия обязательна для заполнения
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="middleName" class="form-label">Отчество</label>
+            <input type="text" class="form-control" id="middleName" 
+                   formControlName="middleName">
+            <div class="form-text">Необязательное поле</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="birthDate" class="form-label">Дата рождения</label>
+            <input type="date" class="form-control" id="birthDate" 
+                   formControlName="birthDate"
+                   [class.is-invalid]="employeeForm.get('birthDate')?.invalid && employeeForm.get('birthDate')?.touched">
+            <div class="invalid-feedback" 
+                 *ngIf="employeeForm.get('birthDate')?.invalid && employeeForm.get('birthDate')?.touched">
+              Дата рождения обязательна для заполнения
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="hireDate" class="form-label">Дата устройства на работу</label>
+            <input type="date" class="form-control" id="hireDate" 
+                   formControlName="hireDate"
+                   [class.is-invalid]="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched">
+            <div class="invalid-feedback" 
+                 *ngIf="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched">
+              Дата устройства на работу обязательна для заполнения
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="salary" class="form-label">Заработная плата</label>
+            <input type="number" class="form-control" id="salary" 
+                   formControlName="salary"
+                   [class.is-invalid]="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
+            <div class="invalid-feedback" 
+                 *ngIf="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
+              Заработная плата должна быть больше 0
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="close()" [disabled]="isLoading">Отмена</button>
+          <button type="submit" class="btn btn-primary" [disabled]="isSubmitDisabled">
+            {{ isLoading ? 'Сохранение...' : (isEdit ? 'Сохранить' : 'Создать') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="isVisible" *ngIf="isVisible"></div> 

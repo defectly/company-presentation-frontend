@@ -1,0 +1,30 @@
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.sortable .bi {
+  margin-left: 5px;
+  display: inline-block;
+  min-width: 12px;
+}
+
+.table-responsive {
+  min-height: 50vh;
+}
+
+.sortable:hover {
+  opacity: 0.9;
+}
+
+.table th {
+  border-top: none;
+  vertical-align: middle;
+}
+
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+}
+
+ 

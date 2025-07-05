@@ -1,0 +1,24 @@
+<div class="modal fade" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'" 
+     tabindex="-1" role="dialog" [attr.aria-hidden]="!isVisible">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Подтверждение удаления</h5>
+        <button type="button" class="btn-close" (click)="cancel.emit()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Вы уверены, что хотите удалить сотрудника?</p>
+        <p class="text-muted" *ngIf="employeeName">{{ employeeName }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancel.emit()" [disabled]="isLoading">
+          Отмена
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirm.emit()" [disabled]="isLoading">
+          {{ isLoading ? 'Удаление...' : 'Удалить' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="isVisible" *ngIf="isVisible"></div> 
