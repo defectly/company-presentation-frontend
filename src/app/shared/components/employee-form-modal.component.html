@@ -90,9 +90,13 @@
             <input type="number" class="form-control" id="salary" 
                    formControlName="salary"
                    [class.is-invalid]="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
-            <div class="invalid-feedback" 
-                 *ngIf="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
-              Заработная плата должна быть больше 0
+            <div class="invalid-feedback" *ngIf="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched">
+              <ng-container *ngIf="employeeForm.get('salary')?.errors as errors">
+                <ng-container *ngIf="errors['required']">Заработная плата обязательна для заполнения</ng-container>
+                <ng-container *ngIf="errors['notANumber']">Введите корректное число</ng-container>
+                <ng-container *ngIf="errors['min']">Заработная плата должна быть больше 0</ng-container>
+                <ng-container *ngIf="errors['max']">Заработная плата слишком велика</ng-container>
+              </ng-container>
             </div>
           </div>
         </div>

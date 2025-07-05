@@ -85,19 +85,34 @@ export class EmployeeFormModalComponent implements OnChanges {
       lastName: ['', [Validators.required, Validators.maxLength(50)]],
       birthDate: ['', [Validators.required, this.pastDateValidator]],
       hireDate: ['', [Validators.required, this.futureNotTooFarValidator]],
-      salary: [0, [Validators.required, Validators.min(1), Validators.max(1000000)]]
+      salary: [0, [Validators.required, this.salaryValidator]]
     });
+  }
+
+  private salaryValidator(control: AbstractControl): ValidationErrors | null {
+    if (control.value === null || control.value === undefined || control.value === '') {
+      return { required: true };
+    }
+    const value = Number(control.value);
+    if (isNaN(value)) {
+      return { notANumber: true };
+    }
+    if (value < 1) {
+      return { min: true };
+    }
+    if (value >= Number.MAX_SAFE_INTEGER) {
+      return { max: true };
+    }
+    return null;
   }
 
   private pastDateValidator(control: AbstractControl): ValidationErrors | null {
     if (!control.value) return null;
-    
     const inputDate = new Date(control.value);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     inputDate.setHours(0, 0, 0, 0);
-    
-    if (inputDate > today) {
+    if (inputDate.getTime() > today.getTime()) {
       return { futureDate: true };
     }
     return null;

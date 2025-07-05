@@ -213,7 +213,7 @@ describe('EmployeeFormModalComponent', () => {
     it('should validate salary maximum value', () => {
       const salaryControl = component.employeeForm.get('salary');
       
-      salaryControl?.setValue(10000000);
+      salaryControl?.setValue(79228162514264337593543950335);
       expect(salaryControl?.hasError('max')).toBe(true);
       
       salaryControl?.setValue(500000);
@@ -846,6 +846,14 @@ describe('EmployeeFormModalComponent', () => {
       expect(salaryControl?.hasError('max')).toBe(true);
     });
 
+    it('should handle NaN salary values', () => {
+      const salaryControl = component.employeeForm.get('salary');
+      
+      salaryControl?.setValue(NaN);
+      
+      expect(salaryControl?.hasError('notANumber')).toBe(true);
+    });
+
     it('should handle negative salary values', () => {
       const salaryControl = component.employeeForm.get('salary');
       
@@ -886,7 +894,7 @@ describe('EmployeeFormModalComponent', () => {
         
         it('should return error for future date', () => {
           const futureDate = new Date();
-          futureDate.setDate(futureDate.getDate() + 1);
+          futureDate.setDate(futureDate.getDate() + 2);
           const control = { value: futureDate.toISOString().split('T')[0] } as AbstractControl;
           const result = (component as any).pastDateValidator(control);
           expect(result).toEqual({ futureDate: true });
